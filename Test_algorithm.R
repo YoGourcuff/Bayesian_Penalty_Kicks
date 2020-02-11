@@ -4,9 +4,10 @@ library(pgdraw)
 library(MASS)
 library(matlib)
 r <- 9
-n <- 10000
+n <- 1000
 Id <- diag(r)
 X <- mvrnorm(n,matrix(0,r,1),Id)
+X <- cbind(matrix(1,nrow(X),1),X)
 Y_real <- matrix(0,n,1)
 N<-matrix(1,n,1) #Nb of tries for each Yi (=1 for each i in our case)
 kappa <- Y_real-0.5*N
@@ -21,7 +22,7 @@ invp <- function(x){
 }#To get the intercept
 
 psi <- function(X,i,b){
-  X[i,]%*%b+intercept
+  X[i,]%*%b
 }
 
 V_omega <- function(W){
@@ -44,18 +45,19 @@ Classif <- function(i,threshold){
   else {return(0)}
 }
 
-intercept <- invp(0.75)
+intercept <- 0
 #Construction of the prior on Beta = b_sample
 #Fouskakis, Ntzoufras, and Draper (2009) recommend b = 0 and g = 4 for
 #logistic regression based on unit information considerations. 
 
 b0 <- matrix(0,r,1)
+b0 <- rbind(intercept,b0)
 
 #β ∼ Np(b, g*r*t(X)%*%X) according to Zellner's prior
 g <- 4
 B0 <- g*r*inv(t(X)%*%X)
 
-B0 <- diag(r)
+B0 <- diag(r+1)
 invB0 <- inv(B0)
 productinvB0b0 <- invB0%*%b0 #That will be useful further along
 

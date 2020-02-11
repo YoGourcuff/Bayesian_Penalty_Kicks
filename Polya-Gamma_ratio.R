@@ -16,7 +16,7 @@ invp <- function(x){
 }#To get the intercept
 
 psi <- function(X,i,b){
-  X[i,]%*%b+intercept
+  X[i,]%*%b
 }
 
 V_omega <- function(W){
@@ -53,12 +53,15 @@ kappa <- Y-0.5*N
 n <- ncol(data)
 X<-data[train_set,2:n] #Covariates for each Yi => X=(Xij), Xi = (Xi1,...Xi9)
 r <- ncol(X)
+X <-cbind(matrix(1,nrow(X),1),X)
 
 #Construction of the prior on Beta = b_sample
 #Fouskakis, Ntzoufras, and Draper (2009) recommend b = 0 and g = 4 for
 #logistic regression based on unit information considerations. 
 
 b0 <- matrix(0,r,1)
+intercept <- invp(0.75)
+b0 <- rbind(intercept,b0)
 
 #β ∼ Np(b, g*r*t(X)%*%X) according to Zellner's prior
 g <- 4
@@ -66,7 +69,7 @@ B0 <- g*r*inv(t(X)%*%X)
 
 invB0 <- inv(B0)
 productinvB0b0 <- invB0%*%b0 #That will be useful further along
-intercept <- invp(0.75)
+
 
 #Gibbs Sampling Algorithm
 
@@ -84,13 +87,14 @@ for (k in seq(1,iter)){
 }
 
 X_test<-data[test_set,2:n] #Covariates for each Yi => X=(Xij), Xi = (Xi1,...Xi9)
+X_test <-cbind(matrix(1,nrow(X_test),1),X_test)
 Y_test <-data[test_set,1] #Real Values, success or fail
 
 Y_predicted <- matrix(0,nrow(X_test),1)
 proba_predicted <- matrix(0,nrow(X_test),1)
 for (l in seq(1,length(Y_predicted))){
   proba_predicted[l] <- p(psi(X_test,l,b_sample))
-  Y_predicted[l] <- Classif(l,0.75)
+  Y_predicted[l] <- Classif(l,0.5)
 }#Prediction according to the logistic regression
 
 proba_predicted
