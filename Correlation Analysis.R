@@ -1,6 +1,7 @@
 rm(list = ls())
-setwd("/Users/Ludo/Desktop/Documents importants/2018 - 2020 - Polimi/Bayesian Statistics/Projet")
+setwd("/Users/Ludo/Documents/Documents importants/2018 - 2020 - Polimi/Bayesian Statistics/Projet")
 penos<-read.csv("penalty_data.csv")
+load("final_dataset.Rda")
 
 #Correlation Analysis
 
@@ -14,6 +15,24 @@ penos$Keeper_Direction <- as.numeric(penos$Keeper_Direction)
 penaltyCor <- penos[c(4,8,10,11,12)]
 library(corrplot)
 corPlot <- cor(penaltyCor)
+corrplot(corPlot)
+cor(penaltyCor)
+
+#1.2 Second Correlation Matrix
+final_dataset$isGoal<- as.numeric(final_dataset$isGoal)
+final_dataset$isHome<- as.numeric(final_dataset$isHome)
+final_dataset$Zone_kick<- as.numeric(final_dataset$Zone_kick)
+final_dataset$Zone_keeper<- as.numeric(final_dataset$Zone_keeper)
+final_dataset$isRightFooted <- as.numeric(final_dataset$isRightFooted)
+final_dataset$Scored_penaltys_by_kicker<- as.numeric(final_dataset$Scored_penaltys_by_kicker)
+final_dataset$Failed_penaltys_by_kicker<- as.numeric(final_dataset$Failed_penaltys_by_kicker)
+final_dataset$Not_stopped_penaltys_by_keeper<- as.numeric(final_dataset$Not_stopped_penaltys_by_keeper)
+final_dataset$Stopped_penaltys_by_keeper<- as.numeric(final_dataset$Stopped_penaltys_by_keeper)
+final_dataset$Time.of.Penalty.Awarded<- as.numeric(final_dataset$Time.of.Penalty.Awarded)
+data <- final_dataset[c(1,2,3,4,5,6,8,10)]
+names(data) <- c("Scored","Kick Zone","Dive Direction","IsRightFooted","Home/Away","HistoryKicker","HistoryKeeper","TimePenalty")
+penaltyCor <- 
+corPlot <- cor(data)
 corrplot(corPlot)
 cor(penaltyCor)
 
@@ -59,7 +78,7 @@ ggscatter(penos, x = "Foot", y = "Keeper_Direction",
 pear <- cor.test(penos$Foot, penos$Keeper_Direction)
 pear
 
-#4 Correlation between Foot and Kick_Direction ?
+’#4 Correlation between Foot and Kick_Direction ?
 
 ggscatter(penos, x = "Foot", y = "Kick_Direction", 
           add = "reg.line", conf.int = TRUE, 

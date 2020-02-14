@@ -40,11 +40,12 @@ Classif <- function(i,threshold){
 }
 
 #Data Preparation
-
+Count <- nrow(data)
+vec_acc <- matrix(0,Count,1)
+for (q in seq(1,Count)){
 #Split into train and test set
-values <- runif(nrow(data)) 
-train_set <- (values<0.75)
-test_set <- (values>=0.75)
+train_set <- -q
+test_set <- q
 
 #Construct variables for the Gibbs Sampler
 Y<-data[train_set,1] #Success or not -> target class Y=(Yi)
@@ -75,7 +76,7 @@ W_given_b <- matrix(0,nrow(X),1)#Variable initialization
 
 #Gibbs Sampling Algorithm
 
-iter <- 1500 #Nb of iterations
+iter <- 350 #Nb of iterations
 for (k in seq(1,iter)){
   for (i in seq(1, nrow(X))){
     W_given_b[i] <- pgdraw(N[i],psi(X,i,b_sample))
@@ -88,26 +89,18 @@ for (k in seq(1,iter)){
 
 #Classification part
 
-X_test<-data[test_set,2:n] #Covariates for each Yi => X=(Xij), Xi = (Xi1,...Xi9)
-X_test <-cbind(matrix(1,nrow(X_test),1),X_test)
+X_test<-data[test_set,2:n] #Covariates for each Yi => X=(Xij), Xi = (1,Xi1,...Xi9)
+X_test <-c(1,X_test)
 Y_test <-data[test_set,1] #Real Values, success or fail
 
-Y_predicted <- matrix(0,nrow(X_test),1)
-proba_predicted <- matrix(0,nrow(X_test),1)
-for (l in seq(1,length(Y_predicted))){
-  proba_predicted[l] <- p(psi(X_test,l,b_sample))
-  Y_predicted[l] <- Classif(l,0.5)
-}#Prediction according to the logistic regression
+Y_predicted <- p(X_test%*%b_sample)>0.5
+vec_acc[q] <- (Y_test == Y_predicted)
+}
 
-proba_predicted
-tab <- table(Y_predicted, Y_test)
-tab#Comparison of the prediction and actual values
-accuracy <- tr(tab)/sum(tab)
-precision <- tab[2,2]/(tab[2,2]+tab[2,1])
-recall <- tab[2,2]/(tab[2,2]+tab[1,2])
-balanced_accuracy <- 0.5*(precision + recall)
+vec_acc
+mean(vec_acc)
 
-accuracy
-precision
-recall
-balanced_accuracy
+x <- c(100,200,250,350,500,750,1000,1250,1500,1750,2000)
+y <- c(0.6698113,0.6792453,0.6981132,0.7169811,0.7075472,0.7169811,0.7264151,0.7345832,0.7455527,0.7418931,0.7475931) 
+#Values gathered by hand running the algorithms for different values of T = iter
+plot(x, y,main = "LOO cross-validation", xlab = "Number of iterations",ylab="Mean performance")
