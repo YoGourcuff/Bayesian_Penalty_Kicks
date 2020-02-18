@@ -10,4 +10,6 @@ Actual Penalty Kicks prediction.R is the prediction of the two penalties out of 
 
 Test_successes.R and Test_beta.R are the two functional tests to check that our Polya-Gamma algorithm is viable.
 
+Two files are not mentioned in the report, NaiveBayes.R a first modelization try, and Description Analysis.R some plots to understand how are distributed are data.
+
 There are two missing files about the classic logistic regression because of a forgotten USB key (they will be available from Thursday on).
