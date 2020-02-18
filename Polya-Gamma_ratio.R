@@ -105,7 +105,7 @@ tab#Comparison of the prediction and actual values
 accuracy <- tr(tab)/sum(tab)
 precision <- tab[2,2]/(tab[2,2]+tab[2,1])
 recall <- tab[2,2]/(tab[2,2]+tab[1,2])
-balanced_accuracy <- 0.5*(precision + recall)
+balanced_accuracy <- 0.5*((tab[1,1]/(tab[1,1]+tab[2,1]))+ recall)
 
 accuracy
 precision
